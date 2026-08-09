@@ -151,8 +151,24 @@ header.main-header > * {
     display: block; 
     object-fit: cover;
     transition: transform var(--transition-speed) ease;
+    
+    /* Новые свойства для затемнения */
+    filter: brightness(0.7) contrast(1.2);  /* затемнение + лёгкая сочность */
+    position: relative;
 }
 
+/* Дополнительный мягкий тёмный оверлей (псевдоэлемент) */
+.profile-picture::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,0,0,0) 50%, rgba(0,0,0,0.5) 100%);
+    pointer-events: none;
+}
 .profile-picture:hover {
     transform: scale(1.05);
 }
