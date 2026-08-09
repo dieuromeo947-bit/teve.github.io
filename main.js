@@ -138,15 +138,18 @@ document.addEventListener('DOMContentLoaded', () => {
             
             modalProjectName.textContent = data.name;
             
-            // Buttons
             modalButtonContainer.innerHTML = '';
             if (data.youtubeId) {
-                const previewButton = document.createElement('a');
-                previewButton.href = `https://www.youtube.com/watch?v=${data.youtubeId}`;
-                previewButton.target = "_blank";
-                previewButton.classList.add('button-base', 'button-preview');
-                previewButton.innerHTML = '<i class="fab fa-youtube"></i> View on YouTube';
-                modalButtonContainer.appendChild(previewButton);
+                // Создаём контейнер для встроенного видео
+                const videoDiv = document.createElement('div');
+                videoDiv.classList.add('video-container');
+                const iframe = document.createElement('iframe');
+                iframe.src = `https://www.youtube.com/embed/${data.youtubeId}?autoplay=0&rel=0`;
+                iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+                iframe.allowFullscreen = true;
+                iframe.title = data.name + " video";
+                videoDiv.appendChild(iframe);
+                modalButtonContainer.appendChild(videoDiv);
             }
             if (data.demoUrl) {
                 const demoButton = document.createElement('a');
