@@ -1,33 +1,29 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     // --- Live Online Status Tracker (GMT+3 Schedule: 3:00 PM - 12:00 AM Midnight) ---
     function updateOnlineStatus() {
         const statusBadge = document.getElementById('live-status-badge');
         const statusText = document.getElementById('status-text');
         const cardStatus = document.getElementById('card-status-indicator');
-        
+
         if (!statusBadge || !statusText) return;
-        
-        // Calculate current time in GMT+3 minutes from midnight
+
         const now = new Date();
         const utcHours = now.getUTCHours();
         const utcMinutes = now.getUTCMinutes();
-        
         const gmt3TotalMinutes = ((utcHours + 3) % 24) * 60 + utcMinutes;
-        
-        // 3:00 PM (15:00) = 900 minutes | 12:00 AM Midnight = 1440 minutes
+
         const isOnline = (gmt3TotalMinutes >= 900);
-        
+
         if (isOnline) {
             statusBadge.classList.remove('offline');
             statusBadge.classList.add('online');
             statusText.textContent = "Online Now";
-            
-            // Time remaining until 12:00 AM Midnight GMT+3
+
             const minsUntilOffline = 1440 - gmt3TotalMinutes;
             const hoursLeft = Math.floor(minsUntilOffline / 60);
             const minsLeft = minsUntilOffline % 60;
-            
+
             if (cardStatus) {
                 cardStatus.innerHTML = `<span style="color: #4CAF50; font-weight: 600;">Online Now</span> (active for ~${hoursLeft}h ${minsLeft}m more, until 12:00 AM GMT+3)`;
             }
@@ -35,21 +31,20 @@ document.addEventListener('DOMContentLoaded', () => {
             statusBadge.classList.remove('online');
             statusBadge.classList.add('offline');
             statusText.textContent = "Offline Now";
-            
-            // Time remaining until 3:00 PM GMT+3
+
             const minsUntilOnline = 900 - gmt3TotalMinutes;
             const hoursLeft = Math.floor(minsUntilOnline / 60);
             const minsLeft = minsUntilOnline % 60;
-            
+
             if (cardStatus) {
                 cardStatus.innerHTML = `<span style="color: #FF5252; font-weight: 600;">Offline Now</span> (back online in ~${hoursLeft}h ${minsLeft}m, at 3:00 PM GMT+3)`;
             }
         }
     }
-    
+
     updateOnlineStatus();
-    setInterval(updateOnlineStatus, 60000); // Refresh status every minute
-    
+    setInterval(updateOnlineStatus, 60000);
+
     // --- Schedule Button Highlight Effect ---
     const scheduleBtn = document.querySelector('.schedule-btn');
     if (scheduleBtn) {
@@ -57,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const availCard = document.getElementById('availability-card');
             if (availCard) {
                 availCard.classList.remove('highlight-card');
-                void availCard.offsetWidth; // Trigger DOM reflow to restart animation
+                void availCard.offsetWidth;
                 availCard.classList.add('highlight-card');
             }
         });
@@ -73,30 +68,27 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     window.addEventListener('scroll', revealOnScroll);
     revealOnScroll();
-    
+
     // --- FAQ Accordion ---
     const faqItems = document.querySelectorAll('.faq-item');
     faqItems.forEach(item => {
         const question = item.querySelector('.faq-question');
         question.addEventListener('click', () => {
-            // Close all other FAQ items
             faqItems.forEach(otherItem => {
                 if (otherItem !== item && otherItem.classList.contains('active')) {
                     otherItem.classList.remove('active');
                 }
             });
-            
-            // Toggle current FAQ item
             item.classList.toggle('active');
         });
     });
-    
+
     // --- Active Navbar Links on Scroll ---
     const sections = document.querySelectorAll('main section[id]');
     const navLinks = document.querySelectorAll('nav ul li a');
     const navbar = document.getElementById('navbar');
     let navbarHeight = navbar ? navbar.offsetHeight : 70;
-    
+
     window.addEventListener('resize', () => { navbarHeight = navbar ? navbar.offsetHeight : 70; });
     window.addEventListener('scroll', () => {
         let current = '';
@@ -132,15 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.project-card[data-project-id]').forEach(item => {
         item.addEventListener('click', () => {
             const projectId = item.dataset.projectId;
-            
-            const data = projectsData[projectId]; 
+            const data = projectsData[projectId];
             if (!data) return;
-            
+
             modalProjectName.textContent = data.name;
-            
+
+            // Встроенное видео YouTube
             modalButtonContainer.innerHTML = '';
             if (data.youtubeId) {
-                // Создаём контейнер для встроенного видео
                 const videoDiv = document.createElement('div');
                 videoDiv.classList.add('video-container');
                 const iframe = document.createElement('iframe');
@@ -159,27 +150,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 demoButton.innerHTML = '<i class="fas fa-gamepad"></i> Play Demo';
                 modalButtonContainer.appendChild(demoButton);
             }
-            
+
             // Screenshots
             modalScreenshotsContainer.innerHTML = '';
             data.screenshots.forEach(src => {
                 const thumbContainer = document.createElement('div');
                 thumbContainer.classList.add('screenshot-thumb-container');
                 const img = document.createElement('img');
-                img.src = src; 
-                img.alt = `${data.name} Screenshot`; 
+                img.src = src;
+                img.alt = `${data.name} Screenshot`;
                 img.classList.add('screenshot-thumb');
-                img.dataset.fullsrc = src; 
+                img.dataset.fullsrc = src;
                 thumbContainer.appendChild(img);
                 modalScreenshotsContainer.appendChild(thumbContainer);
             });
             attachLightboxListeners();
-            
+
             modalDescription.textContent = data.description;
             modalClientRequests.textContent = data.clientRequest;
             modalPrice.innerHTML = `<strong>Price:</strong> ${data.price}`;
             modalTimeSpent.innerHTML = `<strong>Time:</strong> ${data.time}`;
-            
+
             // Tags
             modalTagsContainer.innerHTML = '';
             if(data.tags && data.tags.length > 0){
@@ -189,11 +180,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     tagEl.textContent = tag;
                     modalTagsContainer.appendChild(tagEl);
                 });
-                 document.getElementById('modal-tags-section').style.display = 'block';
+                document.getElementById('modal-tags-section').style.display = 'block';
             } else {
                 document.getElementById('modal-tags-section').style.display = 'none';
             }
-            
+
             // Dev Stats
             modalDevStats.innerHTML = '';
             for(const [key, value] of Object.entries(data.devStats)){
@@ -201,12 +192,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 li.innerHTML = `<strong>${key}:</strong> ${value}`;
                 modalDevStats.appendChild(li);
             }
-            
+
             projectDetailModal.classList.add('active');
             document.body.style.overflow = 'hidden';
         });
     });
-    
+
     // --- Modal Closing Logic ---
     const closeModal = () => {
         projectDetailModal.classList.remove('active');
@@ -215,12 +206,12 @@ document.addEventListener('DOMContentLoaded', () => {
     modalCloseButton.addEventListener('click', closeModal);
     projectDetailModal.addEventListener('click', (e) => { if (e.target === projectDetailModal) closeModal(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && projectDetailModal.classList.contains('active')) closeModal(); });
-    
+
     // --- Lightbox Logic ---
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
     const lightboxClose = lightbox.querySelector('.lightbox-close');
-    
+
     function attachLightboxListeners() {
         modalScreenshotsContainer.querySelectorAll('.screenshot-thumb').forEach(thumb => {
             thumb.addEventListener('click', (e) => {
@@ -230,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-    
+
     const closeLightbox = () => lightbox.classList.remove('active');
     lightboxClose.addEventListener('click', closeLightbox);
     lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
